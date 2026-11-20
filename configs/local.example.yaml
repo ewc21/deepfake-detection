@@ -1,0 +1,13 @@
+# Copy this file to configs/local.yaml (gitignored) and edit it for YOUR machine.
+#   cp configs/local.example.yaml configs/local.yaml        (macOS/Linux)
+#   copy configs\local.example.yaml configs\local.yaml      (Windows)
+#
+# dataset_root: folder that CONTAINS wiki/, insight/, text2img/, inpainting/.
+# Relative paths are resolved from the repository root; absolute paths are fine here
+# because this file is never committed. The DFF_ROOT environment variable overrides it.
+dataset_root: dataset
+
+# Optional per-machine overrides (anything from configs/default.yaml), e.g.:
+# device: auto
+# data:
+#   num_workers: 4

@@ -1,0 +1,7 @@
+# Pinned environment for Google Cloud TPU VMs / Colab TPU (Linux only).
+# torch_xla lags torch releases, so TPU runs use torch 2.9.0 (newest torch_xla is 2.9.0).
+# Record this version difference when comparing TPU results with GPU/CPU results.
+-r requirements-base.txt
+torch==2.9.0
+torchvision==0.24.0
+torch_xla[tpu]==2.9.0

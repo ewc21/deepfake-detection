@@ -1,0 +1,58 @@
+{
+  "wiki_images": 30000,
+  "fake_types": {
+    "inpainting": {
+      "total": 30000,
+      "matched": 30000,
+      "unmatched": 0,
+      "unmatched_examples": [],
+      "wiki_without_this_fake": 0,
+      "handling": "unmatched fakes are excluded from all manifests"
+    },
+    "insight": {
+      "total": 30000,
+      "matched": 30000,
+      "unmatched": 0,
+      "unmatched_examples": [],
+      "wiki_without_this_fake": 0,
+      "handling": "unmatched fakes are excluded from all manifests"
+    },
+    "text2img": {
+      "total": 30000,
+      "matched": 30000,
+      "unmatched": 0,
+      "unmatched_examples": [],
+      "wiki_without_this_fake": 0,
+      "handling": "unmatched fakes are excluded from all manifests"
+    }
+  },
+  "corrupted_files_excluded": 0,
+  "phash_max_distance": 6,
+  "near_duplicate_links_between_different_sources": {
+    "inpainting+insight": 16663,
+    "insight+wiki": 22584,
+    "wiki+wiki": 246,
+    "inpainting+wiki": 319,
+    "insight+insight": 259,
+    "text2img+text2img": 10,
+    "inpainting+inpainting": 148,
+    "insight+text2img": 6,
+    "inpainting+text2img": 3,
+    "text2img+wiki": 6
+  },
+  "leakage_groups": 18382,
+  "groups_with_more_than_one_source": 11097,
+  "largest_group_size": 15,
+  "group_size_counts": {
+    "1": 7285,
+    "2": 10786,
+    "3": 154,
+    "4": 135,
+    "5": 11,
+    "6": 6,
+    "7": 1,
+    "8": 1,
+    "10": 2,
+    "15": 1
+  }
+}

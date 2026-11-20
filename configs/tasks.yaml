@@ -1,0 +1,29 @@
+# Binary detection tasks. Each detector is just an entry here — no task-specific code.
+#
+#   real:  folder used for the real class (label 0)
+#   fakes: {folder: fraction} for the fake class (label 1). Fractions must sum to 1.
+#          With several fake types, each source wiki image contributes at most ONE fake,
+#          and sources are partitioned between fake types by these fractions, so the fake
+#          count equals the real count in every split.
+#   eval_only: true -> manifest is built for evaluation (Phase 5) but not meant for training.
+
+faceswap:
+  description: "Face-swap detector: wiki (real) vs. InsightFace swaps (fake)"
+  real: wiki
+  fakes: {insight: 1.0}
+
+text2img:
+  description: "Fully AI-generated detector: wiki (real) vs. Stable Diffusion v1.5 text2img (fake)"
+  real: wiki
+  fakes: {text2img: 1.0}
+
+combined:
+  description: "Combined detector: wiki (real) vs. insight + text2img (fake, 50/50 by type)"
+  real: wiki
+  fakes: {insight: 0.5, text2img: 0.5}
+
+inpainting:
+  description: "Unseen manipulation (Phase 5): wiki (real) vs. SD inpainting (fake)"
+  real: wiki
+  fakes: {inpainting: 1.0}
+  eval_only: true

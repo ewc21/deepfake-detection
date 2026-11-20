@@ -1,0 +1,62 @@
+# Default configuration. Everything here can be overridden from the command line with
+#   --set key.subkey=value      (values are parsed as YAML, e.g. --set train.lr=3e-4)
+# or by dedicated flags (--task, --device, --seeds, --model, --experiment).
+# NO absolute paths in this file: the dataset location comes from configs/local.yaml or DFF_ROOT.
+
+task: faceswap            # key in configs/tasks.yaml
+experiment: null          # output folder name; defaults to "baseline_<task>"
+seeds: [0, 1, 2]          # each seed = one full training run; summary reports mean ± std
+device: auto              # auto | cuda | tpu | mps | cpu   (auto order: cuda -> tpu -> mps -> cpu)
+output_root: outputs
+splits_dir: data/splits
+
+model:
+  name: efficientnet_b0   # see src/models/factory.py for supported names (e.g. resnet18)
+  pretrained: true        # ImageNet weights from torchvision
+  freeze_backbone: false  # false = full fine-tuning of the whole network
+
+data:
+  image_size: 224
+  num_workers: 4          # set 0 to debug; Windows works with >0 (spawn) as all entry points are guarded
+  subset_per_split: null  # debug only: use N images per split (class-balanced). null = full data
+  # Give REAL images the fakes' processing history (full-frame bicubic resize to 512x512 +
+  # JPEG q75 4:2:0 = Pillow defaults, measured on the fakes) before the normal transform.
+  # Applied in training AND evaluation; fakes untouched. See src/data/harmonize.py.
+  # Off for the spec baselines; turn on with --harmonize to compare.
+  harmonize_real:
+    enabled: false
+    size: 512
+    jpeg_quality: 75
+    subsampling: "4:2:0"
+    resample: bicubic
+  # Phase 4: train-time augmentations, e.g. [{name: jpeg, quality: [30, 95], p: 0.5}]
+  # Baseline uses NONE (not even horizontal flips).
+  train_perturbations: []
+
+train:
+  epochs: 10
+  batch_size: 64
+  optimizer: adamw
+  lr: 1.0e-4
+  weight_decay: 1.0e-2    # AdamW default
+  amp: auto               # auto | off | bf16 | fp16   (auto: bf16/fp16 on CUDA, bf16 on TPU, off on MPS/CPU)
+  deterministic: true     # deterministic algorithms where practical (warn-only if unsupported)
+  drop_last: false        # forced to true on TPU (static shapes)
+  early_stopping:
+    metric: auroc         # validation AUROC; best checkpoint uses the same metric
+    patience: 3
+
+eval:
+  batch_size: 128
+  threshold: 0.5          # headline metrics use this FIXED threshold
+  # Phase 3: test-time conditions, e.g. [{name: jpeg, quality: 50}]
+  conditions: []
+
+# Master split (Phase 1). Changing these changes the committed manifests!
+split:
+  seed: 20261119
+  ratios: {train: 0.70, val: 0.15, test: 0.15}
+  # Images (any type) within this pHash Hamming distance tie their source wiki images into
+  # one group. 6 chosen from the data: unrelated faces (text2img vs. nearest wiki) are
+  # almost always >= 10 apart (6/30000 at <= 6), while face swaps vs. their target photo are 0-6.
+  phash_max_distance: 6

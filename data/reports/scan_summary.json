@@ -1,0 +1,145 @@
+{
+  "total_files": 120000,
+  "expected_per_source": 30000,
+  "sources": {
+    "inpainting": {
+      "files": 30000,
+      "extensions": {
+        ".jpg": 30000
+      },
+      "formats": {
+        "JPEG": 30000
+      },
+      "modes": {
+        "RGB": 30000
+      },
+      "corrupted": 0,
+      "corrupted_files": [],
+      "width_min_max": [
+        512,
+        512
+      ],
+      "height_min_max": [
+        512,
+        512
+      ],
+      "most_common_sizes": [
+        [
+          "512x512",
+          30000
+        ]
+      ],
+      "distinct_sizes": 1
+    },
+    "insight": {
+      "files": 30000,
+      "extensions": {
+        ".jpg": 30000
+      },
+      "formats": {
+        "JPEG": 30000
+      },
+      "modes": {
+        "RGB": 30000
+      },
+      "corrupted": 0,
+      "corrupted_files": [],
+      "width_min_max": [
+        512,
+        512
+      ],
+      "height_min_max": [
+        512,
+        512
+      ],
+      "most_common_sizes": [
+        [
+          "512x512",
+          30000
+        ]
+      ],
+      "distinct_sizes": 1
+    },
+    "text2img": {
+      "files": 30000,
+      "extensions": {
+        ".jpg": 30000
+      },
+      "formats": {
+        "JPEG": 30000
+      },
+      "modes": {
+        "RGB": 30000
+      },
+      "corrupted": 0,
+      "corrupted_files": [],
+      "width_min_max": [
+        512,
+        512
+      ],
+      "height_min_max": [
+        512,
+        512
+      ],
+      "most_common_sizes": [
+        [
+          "512x512",
+          30000
+        ]
+      ],
+      "distinct_sizes": 1
+    },
+    "wiki": {
+      "files": 30000,
+      "extensions": {
+        ".jpg": 30000
+      },
+      "formats": {
+        "JPEG": 28952,
+        "PNG": 1005,
+        "GIF": 36,
+        "MPO": 7
+      },
+      "modes": {
+        "RGB": 26445,
+        "L": 2840,
+        "RGBA": 664,
+        "P": 40,
+        "LA": 11
+      },
+      "corrupted": 0,
+      "corrupted_files": [],
+      "width_min_max": [
+        68,
+        1300
+      ],
+      "height_min_max": [
+        69,
+        1370
+      ],
+      "most_common_sizes": [
+        [
+          "440x660",
+          1469
+        ],
+        [
+          "440x587",
+          959
+        ],
+        [
+          "440x293",
+          688
+        ],
+        [
+          "440x330",
+          579
+        ],
+        [
+          "440x440",
+          272
+        ]
+      ],
+      "distinct_sizes": 9202
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "seed": 20261119,
+  "ratios": {
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15
+  },
+  "master": {
+    "train": 21001,
+    "val": 4499,
+    "test": 4500
+  },
+  "tasks": {
+    "faceswap": {
+      "train": {
+        "real": 21001,
+        "fake": 21001,
+        "fake_by_type": {
+          "insight": 21001
+        }
+      },
+      "val": {
+        "real": 4499,
+        "fake": 4499,
+        "fake_by_type": {
+          "insight": 4499
+        }
+      },
+      "test": {
+        "real": 4500,
+        "fake": 4500,
+        "fake_by_type": {
+          "insight": 4500
+        }
+      }
+    },
+    "text2img": {
+      "train": {
+        "real": 21001,
+        "fake": 21001,
+        "fake_by_type": {
+          "text2img": 21001
+        }
+      },
+      "val": {
+        "real": 4499,
+        "fake": 4499,
+        "fake_by_type": {
+          "text2img": 4499
+        }
+      },
+      "test": {
+        "real": 4500,
+        "fake": 4500,
+        "fake_by_type": {
+          "text2img": 4500
+        }
+      }
+    },
+    "combined": {
+      "train": {
+        "real": 21001,
+        "fake": 21001,
+        "fake_by_type": {
+          "insight": 10501,
+          "text2img": 10500
+        }
+      },
+      "val": {
+        "real": 4499,
+        "fake": 4499,
+        "fake_by_type": {
+          "insight": 2250,
+          "text2img": 2249
+        }
+      },
+      "test": {
+        "real": 4500,
+        "fake": 4500,
+        "fake_by_type": {
+          "text2img": 2250,
+          "insight": 2250
+        }
+      }
+    },
+    "inpainting": {
+      "train": {
+        "real": 21001,
+        "fake": 21001,
+        "fake_by_type": {
+          "inpainting": 21001
+        }
+      },
+      "val": {
+        "real": 4499,
+        "fake": 4499,
+        "fake_by_type": {
+          "inpainting": 4499
+        }
+      },
+      "test": {
+        "real": 4500,
+        "fake": 4500,
+        "fake_by_type": {
+          "inpainting": 4500
+        }
+      }
+    }
+  }
+}

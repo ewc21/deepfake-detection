@@ -1,0 +1,41 @@
+{
+  "files_checked": 120000,
+  "phash_max_distance": 6,
+  "exact_duplicate_groups": 165,
+  "exact_duplicate_files": 344,
+  "exact_duplicate_groups_across_splits": 0,
+  "near_duplicate_pairs": 62529,
+  "near_duplicate_pairs_by_type": {
+    "inpainting+wiki": 22604,
+    "insight+wiki": 22584,
+    "inpainting+insight": 16663,
+    "insight+insight": 259,
+    "wiki+wiki": 246,
+    "inpainting+inpainting": 148,
+    "text2img+text2img": 10,
+    "insight+text2img": 6,
+    "text2img+wiki": 6,
+    "inpainting+text2img": 3
+  },
+  "near_duplicate_pairs_across_splits": 0,
+  "near_duplicate_pairs_across_splits_by_type": {},
+  "per_task": {
+    "combined": {
+      "near_duplicate_pairs_across_splits": 0,
+      "exact_duplicate_groups_across_splits": 0
+    },
+    "faceswap": {
+      "near_duplicate_pairs_across_splits": 0,
+      "exact_duplicate_groups_across_splits": 0
+    },
+    "inpainting": {
+      "near_duplicate_pairs_across_splits": 0,
+      "exact_duplicate_groups_across_splits": 0
+    },
+    "text2img": {
+      "near_duplicate_pairs_across_splits": 0,
+      "exact_duplicate_groups_across_splits": 0
+    }
+  },
+  "note": "Pairs between a wiki image and fakes made from it are expected and always share a split."
+}

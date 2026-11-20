@@ -1,0 +1,42 @@
+# --- Dataset images: NEVER commit (each person keeps a local copy) ---
+dataset/
+_zips/
+*.zip
+
+# --- Per-person local settings ---
+configs/local.yaml
+
+# --- Run outputs: only small result files are committed ---
+# Everything under outputs/ is ignored except metrics (json/csv) and figures (png).
+outputs/**
+!outputs/.gitkeep
+!outputs/**/
+!outputs/**/*.json
+!outputs/**/*.csv
+!outputs/**/*.png
+!outputs/**/*.yaml
+!outputs/**/*.log
+# ...but never caches or checkpoint folders
+outputs/cache/
+outputs/**/checkpoints/
+
+# --- Model weights anywhere in the repo ---
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# --- Python / tooling ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+venv/
+.env
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,12 @@
+{
+  "wiki_images": 30000,
+  "filenames_matching_pattern": 30000,
+  "unique_person_ids": 30000,
+  "person_ids_with_multiple_images": 0,
+  "max_images_per_person_id": 1,
+  "person_ids_with_conflicting_dob": 0,
+  "subfolder_equals_last_two_digits_of_id": 30000,
+  "identities_in_more_than_one_split": 0,
+  "leakage_groups_in_more_than_one_split": 0,
+  "limitation": "Identity = IMDB-WIKI person_id from the filename. The same celebrity under a different person_id cannot be detected from filenames; visually near-identical photos are still caught by the pHash grouping."
+}
