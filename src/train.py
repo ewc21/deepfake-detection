@@ -70,7 +70,8 @@ def parse_args(argv=None) -> argparse.Namespace:
     ap.add_argument("--harmonize", action="store_true",
                     help="Give real images the fakes' processing (512x512 bicubic + JPEG q75); "
                          "see src/data/harmonize.py. Default experiment name gets '_harmonized'.")
-    ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE", help="Config overrides")
+    ap.add_argument("--set", nargs="*", action="extend", default=[], metavar="KEY=VALUE",
+                    help="Config overrides; may be given several times (all are applied, in order)")
     ap.add_argument("--skip-check", action="store_true", help="Skip the dataset-vs-manifest check")
     return ap.parse_args(argv)
 

@@ -6,6 +6,7 @@ The task definition from configs/tasks.yaml is attached as cfg["task_def"].
 from __future__ import annotations
 
 import copy
+import os
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -77,6 +78,9 @@ def load_config(
     if use_local:
         local = {k: v for k, v in load_local_config().items() if k not in _LOCAL_ONLY_KEYS}
         cfg = deep_merge(cfg, local)
+        # Per-machine output location (e.g. the TPU group bucket); --set output_root=... still wins.
+        if os.environ.get("DFF_OUTPUT_ROOT"):
+            cfg["output_root"] = os.environ["DFF_OUTPUT_ROOT"]
     for key, value in parse_overrides(overrides):
         set_by_dotted_key(cfg, key, value)
     if task:

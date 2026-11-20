@@ -43,11 +43,18 @@ def _try_tpu():
     if not xla_installed():
         return None
     try:
-        import torch_xla.core.xla_model as xm  # noqa: WPS433 (optional import by design)
+        import torch_xla  # noqa: WPS433 (optional import by design)
+        import torch_xla.core.xla_model as xm
         import torch_xla.distributed.parallel_loader as pl
 
-        dev = xm.xla_device()
-        hw = xm.xla_device_hw(dev) if hasattr(xm, "xla_device_hw") else "TPU"
+        # torch_xla >= 2.5 prefers torch_xla.device(); xm.xla_device() is the older spelling.
+        dev = torch_xla.device() if hasattr(torch_xla, "device") else xm.xla_device()
+        try:
+            hw = xm.xla_device_hw(dev)
+        except Exception:
+            import torch_xla.runtime as xr
+
+            hw = xr.device_type() or "unknown"
         if hw != "TPU":  # torch_xla can also expose CPU/GPU backends; only accept TPU
             return None
         return xm, pl, dev

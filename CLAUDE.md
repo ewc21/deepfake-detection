@@ -74,11 +74,13 @@ src/
   engine.py      device-agnostic train/predict loops, DataLoaders
   train.py       multi-seed training entry point
   evaluate.py    evaluate a checkpoint on any task/split/condition
-  aggregate.py   mean ± std over seeds
+  aggregate.py   mean ± std over seeds (one experiment)
+  compare.py     cross-experiment table + figure (Phase 2 comparison)
   metrics.py     metrics @0.5, Youden threshold, mean/std
   plots.py       ROC, confusion matrix, training curves
   models/factory.py   torchvision backbones with 1-logit head
   data/  download, scan, match, split, dedup, verify, dataset, transforms, harmonize
+scripts/tpu/   setup.sh (session setup), run_phase2.sh (resumable Phase 2 runs), collect_results.sh
 tests/         pytest on synthetic data (no dataset needed)
 notebooks/     exploration only
 outputs/       run outputs (only small json/csv/png/yaml/log committed)
@@ -100,6 +102,7 @@ python -m src.data.scan && python -m src.data.split && python -m src.data.dedup
 python -m src.train --task faceswap|text2img|combined [--model resnet18] [--seeds 0 1 2] [--device auto] [--harmonize]
 python -m src.evaluate --run outputs/<exp>/<run> [--task inpainting] [--condition "{name: jpeg, quality: 50}"]
 python -m src.aggregate --experiment baseline_faceswap
+python -m src.compare        # all experiments -> outputs/comparison/ (table + dot-plot figure)
 
 # tests
 python -m pytest -q
@@ -207,12 +210,13 @@ measures how much the processing shortcut contributes.
 - [ ] Optional: grayscale check + metadata-only shortcut baseline (see "Still open").
 
 ## Phase 2 — Baseline Models
+- [ ] First TPU session: setup.sh + `run_phase2.sh --smoke`; fix any TPU-path issues; time one full run.
 - [ ] Train face-swap detector: wiki vs. insight.
 - [ ] Train AI-generated-image detector: wiki vs. text2img.
 - [ ] Train combined detector: wiki vs. insight + text2img (fakes subsampled 50/50).
 - [ ] Run each baseline with 3 seeds and report mean ± std.
 - [ ] Re-run each baseline with `--harmonize` and compare (processing-shortcut check).
-- [ ] Compare clean test performance across all models.
+- [ ] Compare clean test performance across all models (`python -m src.compare`; script ready).
 - [ ] Save checkpoints, metrics, ROC curves, and confusion matrices.
 
 ## Phase 3 — Robustness Evaluation
@@ -257,3 +261,18 @@ measures how much the processing shortcut contributes.
 - 2026-11-19: Decided to keep plain resize (fakes are squashed full frames; centre crop would add a
   shortcut). Measured the fakes' encoding and added the `--harmonize` switch (+3 tests, 19 total
   passing; harmonized smoke run on real images OK).
+- 2026-11-20: Added `src/compare.py` (Phase 2 comparison: newest run per seed per experiment →
+  mean ± std table + dot plot; dots not bars because metrics sit near 1.0). +2 tests. `.md` files
+  under outputs/ are now committed (comparison.md).
+- 2026-11-20: Compute = course TPU sessions (v6e-1, ephemeral disk, only /mnt/group persists,
+  30-min idle cleanup, ≤2 sessions). Added scripts/tpu/: setup.sh (venv on local disk with pip cache
+  in the bucket; dataset zips cached in /mnt/group/dff_zips and extracted to ~/dff; writes
+  ~/dff_env.sh with PJRT_DEVICE=TPU, DFF_ROOT, DFF_OUTPUT_ROOT=/mnt/group/outputs),
+  run_phase2.sh (one job per experiment×seed, skips finished runs → resumable across sessions;
+  --smoke; --variants to split across 2 machines; aggregates + compares at the end),
+  collect_results.sh (copies small files to outputs/, skips checkpoints and smoke runs).
+  Code changes: DFF_OUTPUT_ROOT env var sets output_root (and aggregate/compare defaults);
+  download.py --zip-cache and re-extracts incomplete folders; repeated --set flags accumulate;
+  compare/collect ignore smoke_* experiments; TPU detection prefers torch_xla.device().
+  Whole flow tested on CPU with a stand-in bucket (setup, smoke, full run, resume, collect);
+  NOT yet run on a real TPU.

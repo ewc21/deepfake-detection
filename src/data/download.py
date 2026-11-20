@@ -50,6 +50,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--archives", nargs="+", default=list(SOURCES), choices=SOURCES)
     ap.add_argument("--revision", default=DEFAULT_REVISION, help="Hugging Face commit/branch to download")
     ap.add_argument("--keep-zips", action="store_true", help="Keep the downloaded .zip files")
+    ap.add_argument("--zip-cache", default=None,
+                    help="Persistent folder for the .zip files (e.g. /mnt/group/dff_zips). Zips found "
+                         "there are reused instead of downloaded; new downloads are stored there and kept.")
     args = ap.parse_args(argv)
 
     try:
@@ -59,34 +62,48 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     dest = Path(args.dest).expanduser().resolve()
-    zip_dir = dest / "_zips"
+    cache = Path(args.zip_cache).expanduser().resolve() if args.zip_cache else None
+    zip_dir = cache or dest / "_zips"
+    keep = args.keep_zips or cache is not None
     dest.mkdir(parents=True, exist_ok=True)
+    zip_dir.mkdir(parents=True, exist_ok=True)
 
     for name in args.archives:
         folder = dest / name
         n = count_files(folder)
-        if n > 0:
-            note = "" if n == EXPECTED_FILES_PER_SOURCE else f" (expected {EXPECTED_FILES_PER_SOURCE}!)"
-            print(f"[skip] {name}: already extracted, {n} files{note}")
+        if n == EXPECTED_FILES_PER_SOURCE:
+            print(f"[skip] {name}: already extracted, {n} files")
             continue
-        print(f"[download] {name}.zip (~1 GB) from {REPO_ID}@{args.revision[:8]} ...")
-        zip_path = Path(
-            hf_hub_download(
-                repo_id=REPO_ID,
-                filename=f"{name}.zip",
-                repo_type="dataset",
-                revision=args.revision,
-                local_dir=zip_dir,
+        if n > 0:  # e.g. an extraction that was interrupted: extract again (overwrites)
+            print(f"[redo] {name}: only {n}/{EXPECTED_FILES_PER_SOURCE} files, extracting again")
+        cached = zip_dir / f"{name}.zip"
+        if cached.is_file() and cached.stat().st_size > 0:
+            print(f"[cache] using {cached}")
+            zip_path = cached
+        else:
+            print(f"[download] {name}.zip (~1 GB) from {REPO_ID}@{args.revision[:8]} ...")
+            zip_path = Path(
+                hf_hub_download(
+                    repo_id=REPO_ID,
+                    filename=f"{name}.zip",
+                    repo_type="dataset",
+                    revision=args.revision,
+                    local_dir=zip_dir,
+                )
             )
-        )
         print(f"[extract] {zip_path.name} -> {dest}")
-        safe_extract(zip_path, dest)
+        try:
+            safe_extract(zip_path, dest)
+        except zipfile.BadZipFile:
+            print(f"[error] {zip_path} is not a valid zip (interrupted copy?). Delete it and re-run.",
+                  file=sys.stderr)
+            return 1
         n = count_files(folder)
         print(f"[done] {name}: {n} files")
-        if not args.keep_zips:
+        if not keep:
             zip_path.unlink(missing_ok=True)
 
-    if zip_dir.exists() and not args.keep_zips:
+    if not keep and zip_dir.exists():
         shutil.rmtree(zip_dir, ignore_errors=True)
     print(
         "\nNext: set dataset_root in configs/local.yaml (or DFF_ROOT) to\n"

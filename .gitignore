@@ -16,6 +16,7 @@ outputs/**
 !outputs/**/*.png
 !outputs/**/*.yaml
 !outputs/**/*.log
+!outputs/**/*.md
 # ...but never caches or checkpoint folders
 outputs/cache/
 outputs/**/checkpoints/

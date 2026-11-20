@@ -105,8 +105,55 @@ python -m src.evaluate --run $RUN --task inpainting    # unseen manipulation (Ph
 
 Results go to `<run>/eval/<task>_<split>_<condition>/`.
 
+### Compare experiments
+
+```bash
+python -m src.compare                     # all experiments under outputs/
+python -m src.compare --experiments baseline_faceswap baseline_faceswap_harmonized
+```
+
+Takes the newest run per seed in each experiment and writes `outputs/comparison/`:
+`comparison.md` (mean ± std table), `comparison.csv`, `comparison_runs.csv` (every run used)
+and `comparison.png` (one panel per metric, tasks on the x-axis, plain vs. harmonized markers
+with ±1 std error bars). Collaborators' runs can be combined by copying their run folders
+(metrics.json + config.yaml are enough) into the same experiment folder.
+
 Metrics: accuracy, precision, recall, F1 (fixed threshold 0.5), AUROC, confusion matrix and
 ROC curve. The validation-optimal threshold is logged for reference only.
+
+## Running on the ECE661 TPUs (v6e-1)
+
+A TPU session is a temporary machine: its disk is deleted when the session ends or after
+30 idle minutes. Only the group bucket `/mnt/group` survives, so the scripts keep the zip
+cache, pip cache, run outputs and checkpoints there, and the dataset on fast local disk.
+
+```bash
+# on your laptop
+ece661 compute start --shape v6e-1 --hours 4      # then ssh to the host it prints
+
+# on the TPU machine (every session)
+git clone <repo url> ~/deepfake-detection          # or: cd ~/deepfake-detection && git pull
+bash ~/deepfake-detection/scripts/tpu/setup.sh     # venv, deps, dataset, checks (~10 min; first time longer)
+source ~/dff_env.sh
+tmux new -s train                                  # survive SSH drops; reattach: tmux attach -t train
+bash scripts/tpu/run_phase2.sh --smoke             # few minutes: whole TPU path + epoch timing
+bash scripts/tpu/run_phase2.sh                     # 3 tasks x {plain, harmonize} x 3 seeds
+bash scripts/tpu/collect_results.sh                # copy small results into outputs/ for git
+
+# on your laptop, when finished
+ece661 compute stop <id>
+```
+
+- **Resumable:** every (experiment, seed) is a separate job that is skipped if it already
+  finished, so after a session expires just run setup + the same `run_phase2.sh` command again.
+- **Two machines in parallel** (at most 2 sessions): `run_phase2.sh --variants plain` on one,
+  `--variants harmonize` on the other. Both write to `/mnt/group/outputs`.
+- **Budget:** time the smoke test and the first full run, then reserve hours accordingly.
+  Every reserved hour counts against the group's share until the session is stopped.
+- Console logs of every job: `/mnt/group/outputs/logs/`. Checkpoints:
+  `/mnt/group/outputs/<experiment>/<run>/checkpoints/best.pt`.
+- TPU runs use torch 2.9 + torch_xla (bf16), so they are not bit-identical to CPU/GPU runs;
+  run all runs that will be compared on the same hardware.
 
 ## 4. What goes into git
 

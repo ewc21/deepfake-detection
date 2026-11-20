@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -53,7 +54,8 @@ def write_summary(exp_dir: Path, run_dirs: list[Path]) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--experiment", required=True)
-    ap.add_argument("--output-root", default="outputs")
+    ap.add_argument("--output-root", default=os.environ.get("DFF_OUTPUT_ROOT", "outputs"),
+                    help="Default: $DFF_OUTPUT_ROOT if set, else outputs/")
     ap.add_argument("--runs", nargs="*", help="Specific run dirs (default: newest run per seed)")
     args = ap.parse_args(argv)
     exp_dir = Path(args.output_root)
